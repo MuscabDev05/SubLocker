@@ -1,0 +1,954 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0, viewport-fit=cover">
+    <meta name="description" content="SubLocker - The ultimate subscription tracker. Never forget a payment, visualize spending, and take control of your finances.">
+    <meta name="theme-color" content="#6366f1">
+    <title>SubLocker | Smart Subscription Manager</title>
+    <link href="https://fonts.googleapis.com/css2?family=Inter:opsz,wght@14..32,300;14..32,400;14..32,500;14..32,600;14..32,700;14..32,800&display=swap" rel="stylesheet">
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
+    <script src="https://cdn.jsdelivr.net/npm/chart.js@4.4.0/dist/chart.umd.min.js"></script>
+    <style>
+        * {
+            margin: 0;
+            padding: 0;
+            box-sizing: border-box;
+        }
+
+        :root {
+            --primary: #6366f1;
+            --primary-dark: #4f46e5;
+            --primary-light: #eef2ff;
+            --secondary: #8b5cf6;
+            --accent: #f97316;
+            --success: #10b981;
+            --warning: #f59e0b;
+            --danger: #ef4444;
+            --info: #3b82f6;
+            --dark: #0f172a;
+            --gray-50: #f8fafc;
+            --gray-100: #f1f5f9;
+            --gray-200: #e2e8f0;
+            --gray-300: #cbd5e1;
+            --gray-400: #94a3b8;
+            --gray-500: #64748b;
+            --gray-600: #475569;
+            --gray-700: #334155;
+            --gray-800: #1e293b;
+            --gray-900: #0f172a;
+            --shadow-xs: 0 1px 2px 0 rgb(0 0 0 / 0.05);
+            --shadow-sm: 0 1px 3px 0 rgb(0 0 0 / 0.1);
+            --shadow-md: 0 4px 6px -1px rgb(0 0 0 / 0.1);
+            --shadow-lg: 0 10px 15px -3px rgb(0 0 0 / 0.1);
+            --shadow-xl: 0 20px 25px -5px rgb(0 0 0 / 0.1);
+            --radius-sm: 8px;
+            --radius-md: 12px;
+            --radius-lg: 16px;
+            --radius-xl: 20px;
+            --radius-2xl: 28px;
+        }
+
+        body {
+            font-family: 'Inter', -apple-system, BlinkMacSystemFont, sans-serif;
+            background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+            min-height: 100vh;
+            padding: 20px;
+        }
+
+        body.light {
+            --bg-primary: #ffffff;
+            --bg-secondary: #f8fafc;
+            --bg-tertiary: #f1f5f9;
+            --text-primary: #0f172a;
+            --text-secondary: #475569;
+            --text-muted: #64748b;
+            --border-color: #e2e8f0;
+        }
+
+        body.dark {
+            --bg-primary: #0f172a;
+            --bg-secondary: #1e293b;
+            --bg-tertiary: #334155;
+            --text-primary: #f1f5f9;
+            --text-secondary: #cbd5e1;
+            --text-muted: #94a3b8;
+            --border-color: #334155;
+        }
+
+        body {
+            background: var(--bg-primary);
+            transition: all 0.3s cubic-bezier(0.4, 0, 0.2, 1);
+        }
+
+        /* Custom Scrollbar */
+        ::-webkit-scrollbar {
+            width: 8px;
+            height: 8px;
+        }
+        ::-webkit-scrollbar-track {
+            background: var(--bg-tertiary);
+            border-radius: 10px;
+        }
+        ::-webkit-scrollbar-thumb {
+            background: var(--primary);
+            border-radius: 10px;
+        }
+        ::-webkit-scrollbar-thumb:hover {
+            background: var(--primary-dark);
+        }
+
+        /* App Container */
+        .app {
+            max-width: 1600px;
+            margin: 0 auto;
+        }
+
+        /* Glass Header */
+        .header {
+            background: var(--bg-primary);
+            backdrop-filter: blur(10px);
+            border-radius: var(--radius-2xl);
+            padding: 24px 32px;
+            margin-bottom: 28px;
+            box-shadow: var(--shadow-lg);
+            border: 1px solid var(--border-color);
+            transition: all 0.3s;
+        }
+
+        .header-content {
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            flex-wrap: wrap;
+            gap: 20px;
+        }
+
+        .logo {
+            display: flex;
+            align-items: center;
+            gap: 12px;
+        }
+        .logo-icon {
+            width: 48px;
+            height: 48px;
+            background: linear-gradient(135deg, var(--primary), var(--secondary));
+            border-radius: var(--radius-lg);
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            font-size: 24px;
+            box-shadow: var(--shadow-md);
+        }
+        .logo h1 {
+            font-size: 1.8rem;
+            background: linear-gradient(135deg, var(--primary), var(--secondary));
+            -webkit-background-clip: text;
+            background-clip: text;
+            color: transparent;
+            font-weight: 800;
+        }
+        .logo p {
+            color: var(--text-muted);
+            font-size: 0.8rem;
+            margin-top: 2px;
+        }
+
+        .stats {
+            display: flex;
+            gap: 16px;
+            flex-wrap: wrap;
+        }
+        .stat-card {
+            text-align: center;
+            padding: 12px 20px;
+            background: var(--bg-secondary);
+            border-radius: var(--radius-lg);
+            border: 1px solid var(--border-color);
+            transition: all 0.3s;
+        }
+        .stat-card:hover {
+            transform: translateY(-2px);
+            box-shadow: var(--shadow-md);
+        }
+        .stat-label {
+            font-size: 0.7rem;
+            color: var(--text-muted);
+            text-transform: uppercase;
+            letter-spacing: 0.5px;
+        }
+        .stat-value {
+            font-size: 1.5rem;
+            font-weight: 800;
+            color: var(--primary);
+        }
+
+        .actions {
+            display: flex;
+            gap: 10px;
+            flex-wrap: wrap;
+        }
+        .btn {
+            padding: 10px 18px;
+            border-radius: var(--radius-md);
+            font-weight: 600;
+            font-size: 0.85rem;
+            cursor: pointer;
+            transition: all 0.2s ease;
+            border: none;
+            display: inline-flex;
+            align-items: center;
+            gap: 8px;
+            background: var(--bg-secondary);
+            color: var(--text-primary);
+            border: 1px solid var(--border-color);
+        }
+        .btn-primary {
+            background: linear-gradient(135deg, var(--primary), var(--secondary));
+            color: white;
+            border: none;
+        }
+        .btn-primary:hover {
+            transform: translateY(-2px);
+            box-shadow: var(--shadow-lg);
+        }
+        .btn-danger {
+            background: var(--danger);
+            color: white;
+        }
+        .btn-outline {
+            background: transparent;
+            border: 1px solid var(--border-color);
+        }
+        .btn:hover {
+            transform: translateY(-2px);
+            box-shadow: var(--shadow-md);
+        }
+
+        /* Grid Layout */
+        .grid-2col {
+            display: grid;
+            grid-template-columns: 1fr 1fr;
+            gap: 28px;
+            margin-bottom: 28px;
+        }
+        @media (max-width: 1024px) {
+            .grid-2col { grid-template-columns: 1fr; }
+        }
+
+        /* Cards */
+        .card {
+            background: var(--bg-primary);
+            border-radius: var(--radius-xl);
+            padding: 24px;
+            border: 1px solid var(--border-color);
+            box-shadow: var(--shadow-sm);
+            transition: all 0.3s;
+        }
+        .card:hover {
+            box-shadow: var(--shadow-lg);
+        }
+        .card-header {
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            margin-bottom: 20px;
+            padding-bottom: 16px;
+            border-bottom: 2px solid var(--border-color);
+        }
+        .card-header h2 {
+            font-size: 1.3rem;
+            font-weight: 700;
+            display: flex;
+            align-items: center;
+            gap: 8px;
+        }
+
+        /* Subscription Items */
+        .subscriptions-list {
+            display: flex;
+            flex-direction: column;
+            gap: 12px;
+            max-height: 520px;
+            overflow-y: auto;
+            padding-right: 6px;
+        }
+        .subscription-item {
+            background: var(--bg-secondary);
+            border-radius: var(--radius-lg);
+            padding: 16px;
+            border: 1px solid var(--border-color);
+            transition: all 0.3s;
+            animation: slideIn 0.3s ease;
+        }
+        .subscription-item:hover {
+            transform: translateX(4px);
+            border-color: var(--primary);
+        }
+        @keyframes slideIn {
+            from { opacity: 0; transform: translateX(-20px); }
+            to { opacity: 1; transform: translateX(0); }
+        }
+        .subscription-header {
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            flex-wrap: wrap;
+            gap: 12px;
+        }
+        .subscription-name {
+            font-size: 1rem;
+            font-weight: 700;
+            display: flex;
+            align-items: center;
+            gap: 10px;
+        }
+        .category-badge {
+            padding: 4px 12px;
+            border-radius: 20px;
+            font-size: 0.7rem;
+            font-weight: 600;
+            background: var(--primary-light);
+            color: var(--primary-dark);
+        }
+        .subscription-details {
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            flex-wrap: wrap;
+            gap: 16px;
+            margin-top: 12px;
+        }
+        .price {
+            font-size: 1.2rem;
+            font-weight: 800;
+            color: var(--primary);
+        }
+        .reminder-badge {
+            background: var(--warning);
+            color: white;
+            padding: 4px 12px;
+            border-radius: 20px;
+            font-size: 0.7rem;
+            font-weight: 600;
+            animation: pulse 2s infinite;
+        }
+        @keyframes pulse {
+            0%, 100% { opacity: 1; transform: scale(1); }
+            50% { opacity: 0.8; transform: scale(0.98); }
+        }
+        .icon-btn {
+            background: none;
+            border: none;
+            cursor: pointer;
+            padding: 8px;
+            border-radius: var(--radius-sm);
+            transition: all 0.2s;
+            font-size: 1rem;
+            color: var(--text-muted);
+        }
+        .icon-btn:hover {
+            background: var(--bg-tertiary);
+            transform: scale(1.05);
+        }
+
+        /* Form */
+        .form-group {
+            margin-bottom: 18px;
+        }
+        .form-group label {
+            display: block;
+            margin-bottom: 8px;
+            font-weight: 500;
+            color: var(--text-secondary);
+            font-size: 0.85rem;
+        }
+        .form-group input, .form-group select {
+            width: 100%;
+            padding: 12px 14px;
+            border-radius: var(--radius-md);
+            border: 1px solid var(--border-color);
+            background: var(--bg-secondary);
+            color: var(--text-primary);
+            font-size: 0.9rem;
+            transition: all 0.2s;
+        }
+        .form-group input:focus, .form-group select:focus {
+            outline: none;
+            border-color: var(--primary);
+            box-shadow: 0 0 0 3px rgba(99, 102, 241, 0.1);
+        }
+
+        /* Analytics Cards */
+        .analytics-grid {
+            display: grid;
+            grid-template-columns: repeat(4, 1fr);
+            gap: 16px;
+            margin-bottom: 28px;
+        }
+        @media (max-width: 768px) {
+            .analytics-grid { grid-template-columns: repeat(2, 1fr); }
+        }
+        .analytics-card {
+            background: var(--bg-primary);
+            border-radius: var(--radius-lg);
+            padding: 20px;
+            text-align: center;
+            border: 1px solid var(--border-color);
+            transition: all 0.3s;
+        }
+        .analytics-card:hover {
+            transform: translateY(-4px);
+            box-shadow: var(--shadow-lg);
+        }
+        .analytics-icon {
+            font-size: 2rem;
+            margin-bottom: 12px;
+        }
+        .analytics-value {
+            font-size: 1.5rem;
+            font-weight: 800;
+            color: var(--primary);
+        }
+        .analytics-label {
+            font-size: 0.75rem;
+            color: var(--text-muted);
+            margin-top: 4px;
+        }
+
+        /* Chart */
+        .chart-container {
+            margin-top: 24px;
+            height: 260px;
+            position: relative;
+        }
+        canvas {
+            max-height: 260px;
+            width: 100%;
+        }
+
+        /* Toast */
+        .toast {
+            position: fixed;
+            bottom: 24px;
+            right: 24px;
+            background: var(--success);
+            color: white;
+            padding: 14px 24px;
+            border-radius: var(--radius-md);
+            box-shadow: var(--shadow-xl);
+            z-index: 1000;
+            animation: slideUp 0.3s ease;
+            display: flex;
+            align-items: center;
+            gap: 10px;
+        }
+        @keyframes slideUp {
+            from { transform: translateY(100px); opacity: 0; }
+            to { transform: translateY(0); opacity: 1; }
+        }
+
+        /* Empty State */
+        .empty-state {
+            text-align: center;
+            padding: 60px 20px;
+            color: var(--text-muted);
+        }
+        .empty-state i {
+            font-size: 4rem;
+            margin-bottom: 16px;
+            opacity: 0.5;
+        }
+
+        /* Modal */
+        .modal {
+            display: none;
+            position: fixed;
+            top: 0;
+            left: 0;
+            width: 100%;
+            height: 100%;
+            background: rgba(0,0,0,0.5);
+            backdrop-filter: blur(4px);
+            z-index: 2000;
+            align-items: center;
+            justify-content: center;
+        }
+        .modal.active {
+            display: flex;
+            animation: fadeIn 0.2s ease;
+        }
+        .modal-content {
+            background: var(--bg-primary);
+            border-radius: var(--radius-xl);
+            padding: 32px;
+            max-width: 500px;
+            width: 90%;
+            text-align: center;
+        }
+        @keyframes fadeIn {
+            from { opacity: 0; }
+            to { opacity: 1; }
+        }
+    </style>
+</head>
+<body>
+<div class="app">
+    <!-- Header -->
+    <div class="header">
+        <div class="header-content">
+            <div class="logo">
+                <div class="logo-icon">🔒</div>
+                <div>
+                    <h1>SubLocker</h1>
+                    <p>Lock in your savings • Never forget a subscription</p>
+                </div>
+            </div>
+            <div class="stats">
+                <div class="stat-card">
+                    <div class="stat-label">Monthly Total</div>
+                    <div class="stat-value" id="totalMonthly">$0</div>
+                </div>
+                <div class="stat-card">
+                    <div class="stat-label">Active Subs</div>
+                    <div class="stat-value" id="activeCount">0</div>
+                </div>
+                <div class="stat-card">
+                    <div class="stat-label">Due Soon</div>
+                    <div class="stat-value" id="dueSoonCount">0</div>
+                </div>
+                <div class="stat-card">
+                    <div class="stat-label">Yearly Cost</div>
+                    <div class="stat-value" id="yearlyTotal">$0</div>
+                </div>
+            </div>
+            <div class="actions">
+                <button class="btn" id="themeToggleBtn"><i class="fas fa-moon"></i> Dark</button>
+                <button class="btn btn-primary" id="exportDataBtn"><i class="fas fa-download"></i> Export</button>
+                <button class="btn btn-danger" id="clearAllBtn"><i class="fas fa-trash"></i> Clear</button>
+            </div>
+        </div>
+    </div>
+
+    <!-- Analytics Row -->
+    <div class="analytics-grid">
+        <div class="analytics-card">
+            <div class="analytics-icon">💰</div>
+            <div class="analytics-value" id="avgSubPrice">$0</div>
+            <div class="analytics-label">Average per Subscription</div>
+        </div>
+        <div class="analytics-card">
+            <div class="analytics-icon">📊</div>
+            <div class="analytics-value" id="mostExpensiveCat">-</div>
+            <div class="analytics-label">Top Spending Category</div>
+        </div>
+        <div class="analytics-card">
+            <div class="analytics-icon">⏰</div>
+            <div class="analytics-value" id="nextPaymentDate">-</div>
+            <div class="analytics-label">Next Payment</div>
+        </div>
+        <div class="analytics-card">
+            <div class="analytics-icon">💡</div>
+            <div class="analytics-value" id="savingsTip">-</div>
+            <div class="analytics-label">Smart Insight</div>
+        </div>
+    </div>
+
+    <div class="grid-2col">
+        <!-- Left: Subscriptions List -->
+        <div class="card">
+            <div class="card-header">
+                <h2><i class="fas fa-list"></i> Your Subscriptions</h2>
+                <button class="btn btn-primary" id="addSubscriptionBtn"><i class="fas fa-plus"></i> Add New</button>
+            </div>
+            <div id="subscriptionsList" class="subscriptions-list"></div>
+        </div>
+
+        <!-- Right: Form & Chart -->
+        <div class="card">
+            <div class="card-header">
+                <h2><i class="fas fa-pen"></i> Add / Edit</h2>
+                <button class="btn btn-outline" id="cancelEditBtn" style="display: none;"><i class="fas fa-times"></i> Cancel</button>
+            </div>
+            <form id="subscriptionForm">
+                <input type="hidden" id="editId" value="">
+                <div class="form-group">
+                    <label><i class="fas fa-tag"></i> Service Name *</label>
+                    <input type="text" id="serviceName" placeholder="e.g., Netflix, Spotify, Gym" required>
+                </div>
+                <div class="form-group">
+                    <label><i class="fas fa-dollar-sign"></i> Monthly Cost ($) *</label>
+                    <input type="number" id="cost" step="0.01" placeholder="15.99" required>
+                </div>
+                <div class="form-group">
+                    <label><i class="fas fa-layer-group"></i> Category</label>
+                    <select id="category">
+                        <option value="Entertainment">🎬 Entertainment</option>
+                        <option value="Productivity">💼 Productivity</option>
+                        <option value="Health & Fitness">💪 Health & Fitness</option>
+                        <option value="Software">💻 Software</option>
+                        <option value="Cloud Storage">☁️ Cloud Storage</option>
+                        <option value="Music">🎵 Music</option>
+                        <option value="News">📰 News</option>
+                        <option value="Other">📦 Other</option>
+                    </select>
+                </div>
+                <div class="form-group">
+                    <label><i class="fas fa-calendar"></i> Billing Day (1-31)</label>
+                    <input type="number" id="billingDay" min="1" max="31" value="1">
+                </div>
+                <div class="form-group">
+                    <label><i class="fas fa-bell"></i> Reminder (days before)</label>
+                    <select id="reminderDays">
+                        <option value="0">Same day</option>
+                        <option value="1">1 day before</option>
+                        <option value="2">2 days before</option>
+                        <option value="3" selected>3 days before</option>
+                        <option value="5">5 days before</option>
+                        <option value="7">1 week before</option>
+                    </select>
+                </div>
+                <button type="submit" class="btn btn-primary" style="width: 100%;"><i class="fas fa-save"></i> Save Subscription</button>
+            </form>
+
+            <div class="chart-container">
+                <h3 style="margin: 24px 0 16px 0;"><i class="fas fa-chart-pie"></i> Spending by Category</h3>
+                <canvas id="spendingChart"></canvas>
+            </div>
+        </div>
+    </div>
+
+    <!-- Upcoming Payments Section -->
+    <div class="card">
+        <div class="card-header">
+            <h2><i class="fas fa-bell"></i> Upcoming Payments</h2>
+            <button class="btn btn-outline" id="refreshRemindersBtn"><i class="fas fa-sync-alt"></i> Refresh</button>
+        </div>
+        <div id="upcomingPayments"></div>
+    </div>
+</div>
+
+<!-- Confirmation Modal -->
+<div id="confirmModal" class="modal">
+    <div class="modal-content">
+        <i class="fas fa-exclamation-triangle" style="font-size: 3rem; color: var(--warning); margin-bottom: 16px;"></i>
+        <h3>Clear All Subscriptions?</h3>
+        <p style="margin: 16px 0; color: var(--text-muted);">This action cannot be undone. All your subscription data will be permanently deleted.</p>
+        <div style="display: flex; gap: 12px; justify-content: center;">
+            <button class="btn" id="confirmNo">Cancel</button>
+            <button class="btn btn-danger" id="confirmYes">Yes, Delete All</button>
+        </div>
+    </div>
+</div>
+
+<script>
+    let subscriptions = [];
+    let chart = null;
+    let pendingClear = false;
+
+    function loadData() {
+        const saved = localStorage.getItem('sublocker_data');
+        if (saved) {
+            subscriptions = JSON.parse(saved);
+        } else {
+            subscriptions = [
+                { id: Date.now() + 1, name: "Netflix", cost: 15.99, category: "Entertainment", billingDay: 5, reminderDays: 3 },
+                { id: Date.now() + 2, name: "Spotify", cost: 9.99, category: "Music", billingDay: 10, reminderDays: 2 },
+                { id: Date.now() + 3, name: "Gym Membership", cost: 49.99, category: "Health & Fitness", billingDay: 1, reminderDays: 3 },
+                { id: Date.now() + 4, name: "Adobe Cloud", cost: 52.99, category: "Software", billingDay: 15, reminderDays: 5 }
+            ];
+        }
+    }
+
+    function saveData() {
+        localStorage.setItem('sublocker_data', JSON.stringify(subscriptions));
+    }
+
+    function calculateAdvancedStats() {
+        if (subscriptions.length === 0) return;
+        
+        const avg = subscriptions.reduce((s, sub) => s + sub.cost, 0) / subscriptions.length;
+        document.getElementById('avgSubPrice').textContent = `$${avg.toFixed(2)}`;
+        
+        const categoryTotals = {};
+        subscriptions.forEach(sub => {
+            categoryTotals[sub.category] = (categoryTotals[sub.category] || 0) + sub.cost;
+        });
+        const topCategory = Object.entries(categoryTotals).sort((a,b) => b[1] - a[1])[0];
+        document.getElementById('mostExpensiveCat').textContent = topCategory ? topCategory[0] : '-';
+        
+        const today = new Date();
+        const upcoming = subscriptions.map(sub => {
+            let paymentDate = new Date(today.getFullYear(), today.getMonth(), sub.billingDay);
+            if (paymentDate < today) paymentDate = new Date(today.getFullYear(), today.getMonth() + 1, sub.billingDay);
+            return { ...sub, paymentDate, daysUntil: Math.ceil((paymentDate - today) / (1000*60*60*24)) };
+        }).filter(s => s.daysUntil >= 0).sort((a,b) => a.daysUntil - b.daysUntil);
+        
+        if (upcoming.length > 0) {
+            document.getElementById('nextPaymentDate').textContent = `${upcoming[0].name} (${upcoming[0].daysUntil}d)`;
+        } else {
+            document.getElementById('nextPaymentDate').textContent = '-';
+        }
+        
+        const total = subscriptions.reduce((s, sub) => s + sub.cost, 0);
+        const savingsTip = total > 100 ? "You're spending over $100/month—consider auditing!" : "Great job keeping costs low!";
+        document.getElementById('savingsTip').textContent = savingsTip;
+    }
+
+    function calculateStats() {
+        const total = subscriptions.reduce((s, sub) => s + sub.cost, 0);
+        const yearly = total * 12;
+        const today = new Date().getDate();
+        const dueSoon = subscriptions.filter(sub => {
+            const daysUntil = sub.billingDay - today;
+            return daysUntil >= 0 && daysUntil <= sub.reminderDays;
+        }).length;
+        
+        document.getElementById('totalMonthly').textContent = `$${total.toFixed(2)}`;
+        document.getElementById('activeCount').textContent = subscriptions.length;
+        document.getElementById('dueSoonCount').textContent = dueSoon;
+        document.getElementById('yearlyTotal').textContent = `$${yearly.toFixed(2)}`;
+        
+        calculateAdvancedStats();
+        return { total, dueSoon };
+    }
+
+    function getUpcomingPayments() {
+        const today = new Date();
+        const upcoming = subscriptions.map(sub => {
+            let paymentDate = new Date(today.getFullYear(), today.getMonth(), sub.billingDay);
+            if (paymentDate < today) paymentDate = new Date(today.getFullYear(), today.getMonth() + 1, sub.billingDay);
+            const daysUntil = Math.ceil((paymentDate - today) / (1000*60*60*24));
+            return { ...sub, paymentDate, daysUntil };
+        }).filter(sub => sub.daysUntil >= 0 && sub.daysUntil <= 14).sort((a,b) => a.daysUntil - b.daysUntil);
+        return upcoming;
+    }
+
+    function renderSubscriptions() {
+        const container = document.getElementById('subscriptionsList');
+        if (subscriptions.length === 0) {
+            container.innerHTML = `<div class="empty-state"><i class="fas fa-lock"></i><p>No subscriptions yet. Add your first one!</p></div>`;
+            return;
+        }
+        container.innerHTML = subscriptions.map(sub => `
+            <div class="subscription-item">
+                <div class="subscription-header">
+                    <div class="subscription-name">
+                        <i class="fas fa-lock" style="color: var(--primary);"></i>
+                        ${escapeHtml(sub.name)}
+                        <span class="category-badge">${escapeHtml(sub.category)}</span>
+                    </div>
+                    <div class="subscription-actions">
+                        <button class="icon-btn" onclick="editSubscription(${sub.id})"><i class="fas fa-edit"></i></button>
+                        <button class="icon-btn" onclick="deleteSubscription(${sub.id})"><i class="fas fa-trash"></i></button>
+                    </div>
+                </div>
+                <div class="subscription-details">
+                    <div class="price">$${sub.cost.toFixed(2)}<span style="font-size:0.75rem;">/mo</span></div>
+                    <div>📅 Billing day ${sub.billingDay}</div>
+                    ${getReminderBadge(sub)}
+                </div>
+            </div>
+        `).join('');
+        calculateStats();
+    }
+    
+    function getReminderBadge(sub) {
+        const today = new Date().getDate();
+        const daysUntil = sub.billingDay - today;
+        if (daysUntil >= 0 && daysUntil <= sub.reminderDays) {
+            return `<span class="reminder-badge"><i class="fas fa-bell"></i> Due in ${daysUntil} day${daysUntil !== 1 ? 's' : ''}</span>`;
+        }
+        return '';
+    }
+    
+    function renderUpcomingPayments() {
+        const upcoming = getUpcomingPayments();
+        const container = document.getElementById('upcomingPayments');
+        if (upcoming.length === 0) {
+            container.innerHTML = `<div class="empty-state"><i class="fas fa-check-circle"></i><p>No upcoming payments in the next 14 days</p></div>`;
+            return;
+        }
+        container.innerHTML = upcoming.map(p => `
+            <div class="subscription-item">
+                <div class="subscription-header">
+                    <div class="subscription-name">
+                        <i class="fas fa-calendar-alt"></i> ${escapeHtml(p.name)}
+                        <span class="category-badge">${escapeHtml(p.category)}</span>
+                    </div>
+                    <div class="price">$${p.cost.toFixed(2)}</div>
+                </div>
+                <div class="subscription-details">
+                    <div>📅 ${p.paymentDate.toLocaleDateString('en-US', { month: 'long', day: 'numeric' })}</div>
+                    <span class="reminder-badge">${p.daysUntil === 0 ? 'Due today!' : `In ${p.daysUntil} days`}</span>
+                </div>
+            </div>
+        `).join('');
+    }
+    
+    function renderCategorySummary() {
+        const categories = {};
+        subscriptions.forEach(sub => {
+            categories[sub.category] = (categories[sub.category] || 0) + sub.cost;
+        });
+        updateChart(categories);
+    }
+    
+    function updateChart(categoriesData) {
+        const ctx = document.getElementById('spendingChart').getContext('2d');
+        const categories = Object.keys(categoriesData);
+        const amounts = Object.values(categoriesData);
+        if (chart) chart.destroy();
+        if (categories.length === 0) return;
+        chart = new Chart(ctx, {
+            type: 'doughnut',
+            data: {
+                labels: categories,
+                datasets: [{
+                    data: amounts,
+                    backgroundColor: ['#6366f1', '#8b5cf6', '#10b981', '#f59e0b', '#ef4444', '#06b6d4', '#ec489a', '#6b7280'],
+                    borderWidth: 0,
+                    hoverOffset: 15
+                }]
+            },
+            options: {
+                responsive: true,
+                maintainAspectRatio: true,
+                plugins: {
+                    legend: { position: 'bottom', labels: { color: getComputedStyle(document.body).getPropertyValue('--text-primary'), font: { size: 11 } } },
+                    tooltip: { callbacks: { label: (ctx) => `$${ctx.raw.toFixed(2)} (${((ctx.raw / amounts.reduce((a,b)=>a+b,0))*100).toFixed(1)}%)` } }
+                }
+            }
+        });
+    }
+    
+    function addSubscription(e) {
+        e.preventDefault();
+        const name = document.getElementById('serviceName').value.trim();
+        const cost = parseFloat(document.getElementById('cost').value);
+        const category = document.getElementById('category').value;
+        const billingDay = parseInt(document.getElementById('billingDay').value);
+        const reminderDays = parseInt(document.getElementById('reminderDays').value);
+        const editId = document.getElementById('editId').value;
+        if (!name || isNaN(cost) || cost <= 0) { showToast('Please fill all required fields', 'error'); return; }
+        if (editId) {
+            const index = subscriptions.findIndex(s => s.id == editId);
+            if (index !== -1) subscriptions[index] = { ...subscriptions[index], name, cost, category, billingDay, reminderDays };
+            showToast('Subscription updated!', 'success');
+            document.getElementById('editId').value = '';
+            document.getElementById('cancelEditBtn').style.display = 'none';
+        } else {
+            subscriptions.push({ id: Date.now(), name, cost, category, billingDay, reminderDays });
+            showToast('Subscription added!', 'success');
+        }
+        document.getElementById('subscriptionForm').reset();
+        saveData();
+        renderAll();
+    }
+    
+    function editSubscription(id) {
+        const sub = subscriptions.find(s => s.id === id);
+        if (sub) {
+            document.getElementById('serviceName').value = sub.name;
+            document.getElementById('cost').value = sub.cost;
+            document.getElementById('category').value = sub.category;
+            document.getElementById('billingDay').value = sub.billingDay;
+            document.getElementById('reminderDays').value = sub.reminderDays;
+            document.getElementById('editId').value = sub.id;
+            document.getElementById('cancelEditBtn').style.display = 'inline-flex';
+            showToast('Editing mode - make changes and save', 'info');
+        }
+    }
+    
+    function deleteSubscription(id) {
+        if (confirm('Delete this subscription?')) {
+            subscriptions = subscriptions.filter(s => s.id !== id);
+            saveData();
+            renderAll();
+            showToast('Subscription deleted', 'success');
+        }
+    }
+    
+    function cancelEdit() {
+        document.getElementById('subscriptionForm').reset();
+        document.getElementById('editId').value = '';
+        document.getElementById('cancelEditBtn').style.display = 'none';
+        showToast('Edit cancelled', 'info');
+    }
+    
+    function clearAll() {
+        const modal = document.getElementById('confirmModal');
+        modal.classList.add('active');
+        pendingClear = true;
+    }
+    
+    function confirmClear() {
+        if (pendingClear) {
+            subscriptions = [];
+            saveData();
+            renderAll();
+            showToast('All subscriptions cleared', 'success');
+            document.getElementById('confirmModal').classList.remove('active');
+            pendingClear = false;
+        }
+    }
+    
+    function exportData() {
+        const data = JSON.stringify(subscriptions, null, 2);
+        const blob = new Blob([data], { type: 'application/json' });
+        const a = document.createElement('a');
+        a.href = URL.createObjectURL(blob);
+        a.download = `sublocker_${new Date().toISOString().split('T')[0]}.json`;
+        a.click();
+        URL.revokeObjectURL(a.href);
+        showToast('Data exported!', 'success');
+    }
+    
+    function renderAll() {
+        renderSubscriptions();
+        renderUpcomingPayments();
+        renderCategorySummary();
+        calculateStats();
+    }
+    
+    function showToast(msg, type = 'success') {
+        const toast = document.createElement('div');
+        toast.className = 'toast';
+        const icon = type === 'error' ? '⚠️' : type === 'warning' ? '⚠️' : '✅';
+        toast.innerHTML = `<i class="fas ${type === 'error' ? 'fa-exclamation-circle' : 'fa-check-circle'}"></i> ${msg}`;
+        toast.style.background = type === 'error' ? '#ef4444' : type === 'warning' ? '#f59e0b' : '#10b981';
+        document.body.appendChild(toast);
+        setTimeout(() => toast.remove(), 3000);
+    }
+    
+    function escapeHtml(str) { if (!str) return ''; return str.replace(/[&<>]/g, m => ({ '&': '&amp;', '<': '&lt;', '>': '&gt;' }[m])); }
+    
+    function initTheme() {
+        const saved = localStorage.getItem('sublocker_theme') || 'light';
+        document.body.className = saved;
+        document.getElementById('themeToggleBtn').innerHTML = saved === 'dark' ? '<i class="fas fa-sun"></i> Light' : '<i class="fas fa-moon"></i> Dark';
+    }
+    function toggleTheme() {
+        const newTheme = document.body.className === 'dark' ? 'light' : 'dark';
+        document.body.className = newTheme;
+        localStorage.setItem('sublocker_theme', newTheme);
+        document.getElementById('themeToggleBtn').innerHTML = newTheme === 'dark' ? '<i class="fas fa-sun"></i> Light' : '<i class="fas fa-moon"></i> Dark';
+        renderCategorySummary();
+    }
+    
+    document.getElementById('subscriptionForm').addEventListener('submit', addSubscription);
+    document.getElementById('cancelEditBtn').addEventListener('click', cancelEdit);
+    document.getElementById('clearAllBtn').addEventListener('click', clearAll);
+    document.getElementById('exportDataBtn').addEventListener('click', exportData);
+    document.getElementById('refreshRemindersBtn').addEventListener('click', renderUpcomingPayments);
+    document.getElementById('addSubscriptionBtn').addEventListener('click', () => { document.getElementById('subscriptionForm').reset(); document.getElementById('editId').value = ''; document.getElementById('cancelEditBtn').style.display = 'none'; });
+    document.getElementById('themeToggleBtn').addEventListener('click', toggleTheme);
+    document.getElementById('confirmNo').addEventListener('click', () => document.getElementById('confirmModal').classList.remove('active'));
+    document.getElementById('confirmYes').addEventListener('click', confirmClear);
+    
+    loadData();
+    renderAll();
+    initTheme();
+</script>
+</body>
+</html>
